@@ -2,6 +2,7 @@ package main
 
 import (
 	"GOIF/context"
+	"GOIF/internal"
 	"GOIF/route"
 	"GOIF/types"
 	"net/http"
@@ -23,7 +24,16 @@ func registerRoutes() {
 		BasePath: "/v1/api",
 	}
 
+	setupShowNameFunction()
+
 	helloWorldRoute := v1Route.NewRoute("/helloworld", http.MethodGet)
-	helloWorldRoute.MultiStep("log:Testing 1", "log:Testing 2").Step("log:Testing 3")
+	helloWorldRoute.MultiStep("log:Starting hello world...", "direct:showname").Step("log:Finish hello world!")
 	helloWorldRoute.Build()
+}
+
+func setupShowNameFunction() {
+	internal.From("direct:showname").Processor(func(transport types.HttpTransport) types.HttpTransport {
+		transport.Response.Write([]byte("Hello World!"))
+		return transport
+	}).End()
 }
