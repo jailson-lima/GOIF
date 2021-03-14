@@ -22,5 +22,8 @@ func registerRoutes() {
 		Id:       "V1 API",
 		BasePath: "/v1/api",
 	}
-	v1Route.NewRoute("/helloworld", http.MethodGet).Build()
+
+	helloWorldRoute := v1Route.NewRoute("/helloworld", http.MethodGet)
+	helloWorldRoute.MultiStep("log:Testing 1", "log:Testing 2").Step("log:Testing 3")
+	helloWorldRoute.Build()
 }
