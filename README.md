@@ -53,6 +53,6 @@ module github.com/x/y
 go 1.15
 
 require (
-        GOIF latest
+        github.com/JPereirax/GOIF latest
 )
 ```
