@@ -12,23 +12,30 @@ type (
 	HttpTransport struct {
 		Request *http.Request
 		Response http.ResponseWriter
+
+		Body     string
 	}
 
 	ContextRequest struct {
 		Component Component
 
-		HttpTransport HttpTransport
+		HttpTransport *HttpTransport
 	}
 
 	Component struct {
 		Schema    string
 		Uri       string
 
-		Function func(ctx ContextRequest) HttpTransport
+		Function func(ctx ContextRequest) (*HttpTransport, error)
 	}
 
 	InternalFunction struct {
 		Id         string
-		Processors []func(transport HttpTransport) HttpTransport
+		Processors []func(transport *HttpTransport) *HttpTransport
+	}
+
+	ErrorResponse struct {
+		Status  int
+		Message string
 	}
 )

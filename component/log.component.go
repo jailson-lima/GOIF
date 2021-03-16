@@ -11,7 +11,7 @@ func init() {
 	CreateComponent("log").Processor(LogComponent{}.run).End()
 }
 
-func (LogComponent) run(ctx types.ContextRequest) types.HttpTransport {
+func (LogComponent) run(ctx types.ContextRequest) (*types.HttpTransport, error) {
 	log.Print(ctx.Component.Uri)
-	return ctx.HttpTransport
+	return ctx.HttpTransport, nil
 }

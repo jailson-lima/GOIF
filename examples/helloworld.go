@@ -2,11 +2,19 @@ package main
 
 import (
 	"GOIF/context"
+	"GOIF/extensions"
 	"GOIF/internal"
 	"GOIF/route"
 	"GOIF/types"
 	"net/http"
 )
+
+type Posts struct {
+	UserId int    `json:"userId"`
+	Id     int    `json:"id"`
+	Title  string `json:"title"`
+	Body   string `json:"body"`
+}
 
 func main() {
 	properties := types.Properties{
@@ -24,16 +32,21 @@ func registerRoutes() {
 		BasePath: "/v1/api",
 	}
 
-	setupShowNameFunction()
+	directShowPosts()
 
 	helloWorldRoute := v1Route.NewRoute("/helloworld", http.MethodGet)
-	helloWorldRoute.MultiStep("log:Starting hello world...", "direct:showname").Step("log:Finish hello world!")
+	helloWorldRoute.Step("log:Starting hello world...")
+	helloWorldRoute.MultiStep(
+		"http://jsonplaceholder.typicode.com/posts/1[method=get]",
+		"direct:showposts",
+	)
+	helloWorldRoute.Step("log:Finish hello world!")
 	helloWorldRoute.Build()
 }
 
-func setupShowNameFunction() {
-	internal.From("direct:showname").Processor(func(transport types.HttpTransport) types.HttpTransport {
-		transport.Response.Write([]byte("Hello World!"))
+func directShowPosts() {
+	internal.From("direct:showposts").Processor(func(transport *types.HttpTransport) *types.HttpTransport {
+		extensions.SendJson(transport, &Posts{}, 200)
 		return transport
 	}).End()
 }

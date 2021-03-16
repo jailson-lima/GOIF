@@ -58,17 +58,24 @@ func (route *Route) Build() {
 
 		log.Printf("Received request from host '%s' to route '%s'.", request.RemoteAddr, request.Host + route.path)
 
+		transport := &types.HttpTransport{
+			Request: request,
+			Response: response,
+		}
+
 		for _, step := range route.steps {
 			context := types.ContextRequest {
 				Component: step,
-				HttpTransport: types.HttpTransport {
-					Request:  request,
-					Response: response,
-				},
+				HttpTransport: transport,
 			}
 
-			transportProperty := step.Function(context)
-			request, response = transportProperty.Request, transportProperty.Response
+			newTransport, err := step.Function(context)
+			if err != nil {
+				break
+			}
+
+			transport = newTransport
+			request, response = transport.Request, transport.Response
 			if response == nil {
 				break
 			}
