@@ -8,16 +8,18 @@ import (
 	"strings"
 )
 
-type Rest struct {
-	Id       string
-	BasePath string
-}
+type (
+	Rest struct {
+		Id       string
+		BasePath string
+	}
 
-type Route struct {
-	path   string
-	method string
-	steps  []component.Component
-}
+	Route struct {
+		path   string
+		method string
+		steps  []types.Component
+	}
+)
 
 func (rest *Rest) NewRoute(path string, method string) *Route {
 	return &Route{
@@ -57,9 +59,9 @@ func (route *Route) Build() {
 		log.Printf("Received request from host '%s' to route '%s'.", request.RemoteAddr, request.Host + route.path)
 
 		for _, step := range route.steps {
-			context := component.ContextRequest{
+			context := types.ContextRequest {
 				Component: step,
-				HttpTransport: types.HttpTransport{
+				HttpTransport: types.HttpTransport {
 					Request:  request,
 					Response: response,
 				},

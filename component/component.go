@@ -2,32 +2,30 @@ package component
 
 import "GOIF/types"
 
-var RegisteredComponents []*Component
+var RegisteredComponents []*types.Component
 
-type Component struct {
-	Schema    string
-	Uri       string
-	Function func(context ContextRequest) types.HttpTransport
-}
+type (
+	IComponent interface {
+		run(ctx types.ContextRequest) types.HttpTransport
+	}
 
-type ContextRequest struct {
-	Component Component
+	Builder types.Component
+)
 
-	HttpTransport types.HttpTransport
-}
 
-func CreateComponent(schema string) *Component {
-	return &Component{
+func CreateComponent(schema string) *Builder {
+	return &Builder{
 		Schema: schema,
 	}
 }
 
-func (component *Component) Processor(function func(context ContextRequest) types.HttpTransport) *Component {
-	component.Function = function
-	return component
+func (builder *Builder) Processor(fn func(ctx types.ContextRequest) types.HttpTransport) *Builder {
+	builder.Function = fn
+	return builder
 }
 
-func (component *Component) End() *Component {
+func (builder *Builder) End() *types.Component {
+	component := (*types.Component)(builder)
 	RegisteredComponents = append(RegisteredComponents, component)
 	return component
 }
