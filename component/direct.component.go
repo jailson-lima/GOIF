@@ -6,19 +6,21 @@ import (
 	"fmt"
 )
 
+type DirectComponent struct{}
+
 func init() {
-	CreateComponent("direct").Processor(directProcessor).End()
+	CreateComponent("direct").Processor(DirectComponent{}.run).End()
 }
 
-func directProcessor(context ContextRequest) types.HttpTransport {
+func (DirectComponent) run(ctx types.ContextRequest) types.HttpTransport {
 	for _, functions := range internal.ContextFunctions {
-		if functions.Id == fmt.Sprintf("direct:%s", context.Component.Uri) {
+		if functions.Id == fmt.Sprintf("direct:%s", ctx.Component.Uri) {
 			for _, processor := range functions.Processors {
-				context.HttpTransport = processor(context.HttpTransport)
+				ctx.HttpTransport = processor(ctx.HttpTransport)
 			}
 			break
 		}
 	}
 
-	return context.HttpTransport
+	return ctx.HttpTransport
 }
