@@ -6,7 +6,7 @@ var RegisteredComponents []*types.Component
 
 type (
 	IComponent interface {
-		run(ctx types.ContextRequest) types.HttpTransport
+		run(ctx types.ContextRequest) (*types.HttpTransport, error)
 	}
 
 	Builder types.Component
@@ -19,7 +19,7 @@ func CreateComponent(schema string) *Builder {
 	}
 }
 
-func (builder *Builder) Processor(fn func(ctx types.ContextRequest) types.HttpTransport) *Builder {
+func (builder *Builder) Processor(fn func(ctx types.ContextRequest) (*types.HttpTransport, error)) *Builder {
 	builder.Function = fn
 	return builder
 }

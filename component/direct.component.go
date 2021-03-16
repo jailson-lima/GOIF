@@ -12,7 +12,7 @@ func init() {
 	CreateComponent("direct").Processor(DirectComponent{}.run).End()
 }
 
-func (DirectComponent) run(ctx types.ContextRequest) types.HttpTransport {
+func (DirectComponent) run(ctx types.ContextRequest) (*types.HttpTransport, error) {
 	for _, functions := range internal.ContextFunctions {
 		if functions.Id == fmt.Sprintf("direct:%s", ctx.Component.Uri) {
 			for _, processor := range functions.Processors {
@@ -22,5 +22,5 @@ func (DirectComponent) run(ctx types.ContextRequest) types.HttpTransport {
 		}
 	}
 
-	return ctx.HttpTransport
+	return ctx.HttpTransport, nil
 }
