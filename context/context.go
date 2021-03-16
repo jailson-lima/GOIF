@@ -1,8 +1,8 @@
 package context
 
 import (
-	"GOIF/types"
 	"fmt"
+	"github.com/JPereirax/GOIF/types"
 	"io/ioutil"
 	"log"
 	"net/http"

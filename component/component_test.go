@@ -1,22 +1,22 @@
 package component
 
 import (
-	"GOIF/types"
+	"github.com/JPereirax/GOIF/types"
 	"testing"
 )
 
 var component = CreateComponent("test")
 
 func TestCreateComponent(t *testing.T) {
-	checkComponent(component, t)
+	checkComponent((*types.Component)(component), t)
 }
 
 func TestComponent_Processor(t *testing.T) {
-	component = component.Processor(func(context ContextRequest) types.HttpTransport {
-		return context.HttpTransport
+	component = component.Processor(func(context types.ContextRequest) (*types.HttpTransport, error) {
+		return context.HttpTransport, nil
 	})
 
-	checkComponent(component, t)
+	checkComponent((*types.Component)(component), t)
 }
 
 func TestComponent_End(t *testing.T) {
@@ -24,7 +24,7 @@ func TestComponent_End(t *testing.T) {
 
 	found := false
 	for _, components := range RegisteredComponents {
-		if components == component {
+		if components == (*types.Component)(component) {
 			found = true
 			break
 		}
@@ -37,7 +37,7 @@ func TestComponent_End(t *testing.T) {
 	}
 }
 
-func checkComponent(component *Component, t *testing.T) {
+func checkComponent(component *types.Component, t *testing.T) {
 	if component == nil {
 		t.Error("Failed, expected return Component{}.")
 	} else {

@@ -1,6 +1,6 @@
 package component
 
-import "GOIF/types"
+import "github.com/JPereirax/GOIF/types"
 
 var RegisteredComponents []*types.Component
 

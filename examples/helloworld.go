@@ -1,11 +1,11 @@
 package main
 
 import (
-	"GOIF/context"
-	"GOIF/extensions"
-	"GOIF/internal"
-	"GOIF/route"
-	"GOIF/types"
+	"github.com/JPereirax/GOIF/context"
+	"github.com/JPereirax/GOIF/extensions"
+	"github.com/JPereirax/GOIF/internal"
+	"github.com/JPereirax/GOIF/route"
+	"github.com/JPereirax/GOIF/types"
 	"net/http"
 )
 
