@@ -1,10 +1,10 @@
 package component
 
 import (
-	"GOIF/extensions"
-	"GOIF/types"
 	"bytes"
 	"fmt"
+	"github.com/JPereirax/GOIF/extensions"
+	"github.com/JPereirax/GOIF/types"
 	"io/ioutil"
 	"net/http"
 	"strings"

@@ -1,9 +1,9 @@
 package component
 
 import (
-	"GOIF/internal"
-	"GOIF/types"
 	"fmt"
+	"github.com/JPereirax/GOIF/internal"
+	"github.com/JPereirax/GOIF/types"
 )
 
 type DirectComponent struct{}

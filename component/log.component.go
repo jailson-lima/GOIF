@@ -1,7 +1,7 @@
 package component
 
 import (
-	"GOIF/types"
+	"github.com/JPereirax/GOIF/types"
 	"log"
 )
 

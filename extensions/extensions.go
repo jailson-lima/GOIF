@@ -1,9 +1,9 @@
 package extensions
 
 import (
-	"GOIF/types"
 	"encoding/json"
 	"errors"
+	"github.com/JPereirax/GOIF/types"
 	"net/http"
 )
 

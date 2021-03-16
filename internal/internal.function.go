@@ -1,6 +1,6 @@
 package internal
 
-import "GOIF/types"
+import "github.com/JPereirax/GOIF/types"
 
 var ContextFunctions []*types.InternalFunction
 

@@ -1,8 +1,8 @@
 package route
 
 import (
-	"GOIF/component"
-	"GOIF/types"
+	"github.com/JPereirax/GOIF/component"
+	"github.com/JPereirax/GOIF/types"
 	"log"
 	"net/http"
 	"strings"
