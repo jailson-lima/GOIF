@@ -16,9 +16,12 @@ func init() {
 	CreateComponent("http").Processor(HttpComponent{}.run).End()
 }
 
+const prefix = "//"
+const applicationJson = "application/json"
+
 func (HttpComponent) run(ctx types.ContextRequest) (*types.HttpTransport, error) {
 	uri := ctx.Component.Uri
-	if !strings.HasPrefix(uri, "//") {
+	if !strings.HasPrefix(uri, prefix) {
 		return nil, extensions.SendError(ctx.HttpTransport, "Malformed request url: " + uri, http.StatusInternalServerError)
 	}
 
@@ -27,15 +30,18 @@ func (HttpComponent) run(ctx types.ContextRequest) (*types.HttpTransport, error)
 		return nil, extensions.SendError(ctx.HttpTransport, "Options not found in request url: " + uri, http.StatusInternalServerError)
 	}
 
-	options := make(map[string]string)
-	matches := strings.Split(componentOptions, "&")
-	for _, match := range matches {
-		keyValue := strings.Split(match, "=")
-		options[keyValue[0]] = keyValue[1]
+	options := getOptions(componentOptions)
+	method := strings.ToUpper(options["method"])
+
+	requestBody := bytes.NewBuffer([]byte{})
+	if method != http.MethodGet && len(ctx.HttpTransport.Body) > 0 {
+		requestBody = bytes.NewBuffer([]byte(ctx.HttpTransport.Body))
 	}
 
 	uri = fmt.Sprintf("http:%s", strings.ReplaceAll(uri, fmt.Sprintf("[%s]", componentOptions), ""))
-	request, _ := http.NewRequest(strings.ToUpper(options["method"]), uri, bytes.NewBuffer([]byte{}))
+	request, _ := http.NewRequest(method, uri, requestBody)
+	request.Header.Set("Accept", applicationJson)
+	request.Header.Set("Content-type", applicationJson)
 
 	client := &http.Client{}
 	response, err := client.Do(request)
@@ -44,10 +50,20 @@ func (HttpComponent) run(ctx types.ContextRequest) (*types.HttpTransport, error)
 	}
 	defer response.Body.Close()
 
-	body, _ := ioutil.ReadAll(response.Body)
-	ctx.HttpTransport.Body = string(body)
+	responseBody, _ := ioutil.ReadAll(response.Body)
+	ctx.HttpTransport.Body = string(responseBody)
 
 	return ctx.HttpTransport, nil
+}
+
+func getOptions(componentOptions string) map[string]string {
+	options := make(map[string]string)
+	matches := strings.Split(componentOptions, "&")
+	for _, match := range matches {
+		keyValue := strings.Split(match, "=")
+		options[keyValue[0]] = keyValue[1]
+	}
+	return options
 }
 
 func matchOptions(s string) string {

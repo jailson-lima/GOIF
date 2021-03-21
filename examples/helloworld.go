@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/JPereirax/GOIF/context"
 	"github.com/JPereirax/GOIF/extensions"
 	"github.com/JPereirax/GOIF/internal"
@@ -32,19 +33,35 @@ func registerRoutes() {
 		BasePath: "/v1/api",
 	}
 
-	directShowPosts()
+	directPosts()
 
-	helloWorldRoute := v1Route.NewRoute("/helloworld", http.MethodGet)
-	helloWorldRoute.Step("log:Starting hello world...")
-	helloWorldRoute.MultiStep(
+	testPostRoute := v1Route.NewRoute("/post", http.MethodGet)
+	testPostRoute.MultiStep(
+		"log:Sending POST request to JSONPlaceholder",
+		"direct:setbody",
+		"http://jsonplaceholder.typicode.com/posts[method=post]",
+		"direct:showposts",
+	).Build()
+
+	testGetRoute := v1Route.NewRoute("/showpost", http.MethodGet)
+	testGetRoute.MultiStep(
+		"log:Sending GET request to JSONPlaceholder",
 		"http://jsonplaceholder.typicode.com/posts/1[method=get]",
 		"direct:showposts",
-	)
-	helloWorldRoute.Step("log:Finish hello world!")
-	helloWorldRoute.Build()
+	).Build()
 }
 
-func directShowPosts() {
+func directPosts() {
+	internal.From("direct:setbody").Processor(func(transport *types.HttpTransport) *types.HttpTransport {
+		post, _ := json.Marshal(&Posts{
+			UserId: 1,
+			Title:  "GOIF",
+			Body:   "Example GOIF POST request",
+		})
+		transport.Body = string(post)
+		return transport
+	}).End()
+
 	internal.From("direct:showposts").Processor(func(transport *types.HttpTransport) *types.HttpTransport {
 		extensions.SendJson(transport, &Posts{}, 200)
 		return transport
