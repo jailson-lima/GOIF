@@ -36,7 +36,7 @@ func (route *Route) MultiStep(steps ...string) *Route {
 }
 
 func (route *Route) Step(step string) *Route {
-	compound := strings.Split(step, ":")
+	compound := strings.SplitN(step, ":", 2)
 
 	for _, components := range component.RegisteredComponents {
 		if components.Schema == compound[0] {
