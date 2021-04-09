@@ -19,12 +19,12 @@ func SendError(transport *types.HttpTransport, message string, code int) error {
 }
 
 func SendJson(transport *types.HttpTransport, v interface{}, code int) error {
-	setDefaultHeaders(transport.Response, code)
-
 	err := json.Unmarshal([]byte(transport.Body), v)
 	if err != nil {
 		return SendError(transport, "Fail to return json object.", http.StatusInternalServerError)
 	}
+
+	setDefaultHeaders(transport.Response, code)
 
 	json.NewEncoder(transport.Response).Encode(v)
 	return nil
